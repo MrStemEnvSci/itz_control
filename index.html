@@ -35,9 +35,10 @@
         let char;
         async function connectBLE() {
             try {
-                  const device = await navigator.bluetooth.requestDevice({
-                      filters: [{ namePrefix: 'YAKSHA' }], // Matches anything starting with YAKSHA
-                      optionalServices: ['19b10000-e8f2-537e-4f3c-d104768a1214']
+                 // REPLACE THIS SECTION IN YOUR HTML:
+                const device = await navigator.bluetooth.requestDevice({
+                acceptAllDevices: true,
+                optionalServices: ['19b10000-e8f2-537e-4f3c-d104768a1214'] // Keep this UUID!
 });
                 });
                 const server = await device.gatt.connect();
