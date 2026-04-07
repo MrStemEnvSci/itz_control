@@ -1,56 +1,36 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>YAKSHA Advanced Control</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <style>
-        body { font-family: sans-serif; text-align: center; background: #222; color: white; }
-        .btn { width: 80px; height: 80px; margin: 5px; border-radius: 10px; font-weight: bold; cursor: pointer; }
-        .action-btn { width: 140px; height: 50px; background: #444; color: cyan; border: 1px solid cyan; }
-        .stop-btn { background: red; color: white; width: 180px; }
-        .grid { display: inline-grid; grid-template-columns: auto auto auto; margin-bottom: 20px; }
-    </style>
-</head>
-<body>
-    <h1>YAKSHA Control</h1>
-    <button class="btn action-btn" onclick="connectBLE()">PAIR ROBOT</button>
-    <hr>
+<script>
+    let char;
 
-    <h3>Manual Drive</h3>
-    <div class="grid">
-        <div></div><button class="btn" onmousedown="send('F')" onmouseup="send('S')">UP</button><div></div>
-        <button class="btn" onmousedown="send('L')" onmouseup="send('S')">LEFT</button>
-        <button class="btn stop-btn" onclick="send('S')">STOP</button>
-        <button class="btn" onmousedown="send('R')" onmouseup="send('S')">RIGHT</button>
-        <div></div><button class="btn" onmousedown="send('B')" onmouseup="send('S')">DOWN</button><div></div>
-    </div>
-
-    <h3>Precise Tasks</h3>
-    <button class="btn action-btn" onclick="send('1')">FWD 50CM</button>
-    <button class="btn action-btn" onclick="send('2')">BWD 50CM</button><br>
-    <button class="btn action-btn" onclick="send('4')">TURN 90° L</button>
-    <button class="btn action-btn" onclick="send('3')">TURN 90° R</button>
-
-    <script>
-        let char;
-        async function connectBLE() {
-            try {
-                 // REPLACE THIS SECTION IN YOUR HTML:
-                const device = await navigator.bluetooth.requestDevice({
+    async function connectBLE() {
+        console.log("Attempting to connect...");
+        try {
+            // This 'acceptAllDevices' version is the most compatible for Bluefy
+            const device = await navigator.bluetooth.requestDevice({
                 acceptAllDevices: true,
-                optionalServices: ['19b10000-e8f2-537e-4f3c-d104768a1214'] // Keep this UUID!
-});
-                });
-                const server = await device.gatt.connect();
-                const service = await server.getPrimaryService('19b10000-e8f2-537e-4f3c-d104768a1214');
-                char = await service.getCharacteristic('19b10001-e8f2-537e-4f3c-d104768a1214');
-                alert("YAKSHA Connected!");
-            } catch (e) { alert("Error: " + e); }
-        }
+                optionalServices: ['19b10000-e8f2-537e-4f3c-d104768a1214']
+            });
 
-        function send(val) {
-            if (char) char.writeValue(new TextEncoder().encode(val));
+            console.log("Device selected:", device.name);
+            const server = await device.gatt.connect();
+            
+            console.log("Connected to server");
+            const service = await server.getPrimaryService('19b10000-e8f2-537e-4f3c-d104768a1214');
+            
+            console.log("Service found");
+            char = await service.getCharacteristic('19b10001-e8f2-537e-4f3c-d104768a1214');
+            
+            alert("Connected to " + device.name);
+        } catch (e) {
+            console.log("Error:", e);
+            alert("Connection Failed: " + e);
         }
-    </script>
-</body>
-</html>
+    }
+
+    function send(val) {
+        if (char) {
+            char.writeValue(new TextEncoder().encode(val));
+        } else {
+            console.log("Not connected yet!");
+        }
+    }
+</script>
