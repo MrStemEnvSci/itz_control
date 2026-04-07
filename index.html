@@ -35,9 +35,10 @@
         let char;
         async function connectBLE() {
             try {
-                const device = await navigator.bluetooth.requestDevice({
-                    filters: [{ name: 'YAKSHA_BT' }],
-                    optionalServices: ['19b10000-e8f2-537e-4f3c-d104768a1214']
+                  const device = await navigator.bluetooth.requestDevice({
+                      filters: [{ namePrefix: 'YAKSHA' }], // Matches anything starting with YAKSHA
+                      optionalServices: ['19b10000-e8f2-537e-4f3c-d104768a1214']
+});
                 });
                 const server = await device.gatt.connect();
                 const service = await server.getPrimaryService('19b10000-e8f2-537e-4f3c-d104768a1214');
